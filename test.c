@@ -5,16 +5,13 @@ char	*get_next_line(int fd)
 {
 	static char	*temp;
 	char		*buff;
-	char		*src;
+	char		src[BUFFER_SIZE + 1];
 	int			index;
 	int			max;
-	int			len;
+	int			n;
 
-	len = 0;
+	n = 0;
 	if (BUFFER_SIZE <= 0)
-		return (0);
-	src = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (!src)
 		return (0);
 	buff = NULL;
 	while (1)
@@ -22,50 +19,45 @@ char	*get_next_line(int fd)
 		max = read(fd, src, BUFFER_SIZE);
 		if (max <= 0)
 		{
-			if (!buff && !temp)
+			if ((!buff || !ft_strcmp(buff, "")) && !temp)
 				return (0);
 			else if (buff && !temp)
 				return (buff);
+			src[0] = '\0';
 		}
-		len += BUFFER_SIZE;
-		//printf("~~(len == %d)~~\n", len);
 		src[max] = '\0';
 		if (temp)
-			buff = ft_strdup(temp/*, BUFFER_SIZE*/);
+			buff = ft_strdup(temp);
 		if (!buff)
-			buff = ft_strdup(src/*, BUFFER_SIZE*/);
+			buff = ft_strdup(src);
 		else
-			buff = ft_strjoin(buff, src);
-		if ((index = ft_strchr(buff, 10)))
 		{
-			//printf("T~~~~founded~~(%d)~~(max == %d)~~~T\n", index, max);
-			temp = ft_substr(buff, (index + 1), (len - index - 1));
+			buff = ft_strjoin(buff, src);
+			n += BUFFER_SIZE;
+		}
+		if ((index = ft_strchr(buff, 10)) >= 0)
+		{
+			temp = ft_substr(buff, (index + 1), (ft_strlen(buff) - index - 1));
 			buff = ft_substr(buff, 0, (index + 1));
-			//printf("temp == %s\n\n", temp);
 			break;
 		}
-		else
-			{
-				free(temp);
-				temp = NULL;
-			}
+		else if (temp)
+			temp = ft_free(temp);
 	}
-	free(src);
-	src = NULL;
-
 	return (buff);
 }
 
 int main()
 {
-	int fd = open("myfile.txt", O_RDONLY);
+	int fd = open("myfile.txt", O_RDWR);
 	char *buff;
 	int i = 0;
 
-	while (++i <= 7) {
+	while (++i <= 3) {
 		buff = get_next_line(fd);
-		printf("/////_Result_%d_/////\n%s\n\n", i, buff);
+		printf("/~~~~~ line_%d ~~~~~/\n>%s\n\n", i, buff);
 	}
+
 	
 	return (0);
 }
