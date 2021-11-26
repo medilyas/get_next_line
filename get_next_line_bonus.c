@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mkabissi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/24 12:30:05 by mkabissi          #+#    #+#             */
-/*   Updated: 2021/11/24 12:30:13 by mkabissi         ###   ########.fr       */
+/*   Created: 2021/11/26 12:25:55 by mkabissi          #+#    #+#             */
+/*   Updated: 2021/11/26 12:26:19 by mkabissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*ft_free(char *s)
 {
@@ -76,43 +76,27 @@ char	*ft_complete(char **buff, char **temp, char **src)
 
 char	*get_next_line(int fd)
 {
-	static char	*temp;
+	static char	*temp[1000];
 	char		*buff;
 	char		*p;
 	char		*src;
 
-	if (BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (0);
 	buff = NULL;
 	src = NULL;
 	while (1)
 	{
-		p = ft_read(&buff, &temp, &src, fd);
+		p = ft_read(&buff, &temp[fd], &src, fd);
 		if (!p && !buff)
 			return (0);
 		if (!p && buff)
 			return (buff);
 		p = NULL;
-		p = ft_complete(&buff, &temp, &src);
+		p = ft_complete(&buff, &temp[fd], &src);
 		if (p)
 			break ;
-		temp = ft_free(temp);
+		temp[fd] = ft_free(temp[fd]);
 	}
 	return (buff);
 }
-
-/*
-#include <stdio.h>
-int main()
-{
-	int fd = open("myfile.txt", O_RDWR);
-	char *buff;
-	int i = 0;
-
-	while (++i <= 3) {
-		buff = get_next_line(fd);
-		printf("/~~~~~ line_%d ~~~~~/\n>%s\n\n", i, buff);
-	}
-	return (0);
-}
-*/
