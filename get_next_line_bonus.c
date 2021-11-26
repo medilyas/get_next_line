@@ -76,12 +76,12 @@ char	*ft_complete(char **buff, char **temp, char **src)
 
 char	*get_next_line(int fd)
 {
-	static char	*temp[1000];
+	static char	*temp[1024];
 	char		*buff;
 	char		*p;
 	char		*src;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if ((fd < 0 || fd >= 1024) || BUFFER_SIZE <= 0)
 		return (0);
 	buff = NULL;
 	src = NULL;
